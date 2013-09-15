@@ -53,5 +53,37 @@ In any of your layouts, insert this code anywhere. I would recommend putting it 
 
     {% include menu.html menu=site.menu %}
     
-To include pages in this menu, include 
+To include pages in this menu, there are some frontmatter settings that you can specify for each site:
 
+```yaml
+menu:
+  name: something
+  parent: main
+  position: 42
+```
+
+Setting    | Meaning
+-----------|--------
+`name`     | The name to be displayed in the menu for this page (also the name referenced in parent). Defaults to the pages title attribute.
+`parent`   | The menu entry under which to nest the menu item for this page. Specify `main` for top-level entries. Defaults to nothgin which leads to the page not getting a menu entry at all.
+`position` | A position used for sorting The menu entries. Pages without this option are sorted by name and come after all pages that have a position set.
+
+The output of the include tag is best described by example:
+
+```html
+<ul>
+    <li>
+        <a href="/">Index</a>
+    </li>
+    <li class="current-parent">
+        <a href="/something/">A page with a subpage</a>
+        <ul>
+            <li class="current">
+                <a href="/something/else/">The subpage (also the current page)</a>
+            </li>
+        </ul>
+    </li>
+</ul>
+```
+
+As you can see, the output is a list of links and lists. The list item for the current page has the class `current`, parent menu items have the class `current-parent`.

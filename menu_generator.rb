@@ -4,7 +4,6 @@ module Jekyll
     class Page
         def menu
             self.data['menu'] ||= {}
-            self.data['menu']
         end
         
         def menu_parent
@@ -12,16 +11,11 @@ module Jekyll
         end
         
         def menu_name
-            unless menu['name'].nil?
-                menu['name']
-            else
-                self.data['title']
-            end
+            menu['name'] ||= self.data['title']
         end
         
         def subpages
             self.data['subpages'] ||= []
-            self.data['subpages']
         end
     end
     
@@ -55,10 +49,8 @@ module Jekyll
                 @pages.reject! do |page|
                     parent = @lookup[page.menu_parent]
                     unless parent.nil?
-                        liquid_hash = page.to_liquid
-                        parent << liquid_hash
-                        liquid_hash['subpages'] ||= []
-                        @lookup[page.menu_name] = liquid_hash['subpages']
+                        @lookup[page.menu_name] = page.subpages
+                        parent << page.to_liquid
                         true
                     else
                         false
