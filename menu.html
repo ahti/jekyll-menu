@@ -1,7 +1,7 @@
 <ul>
     {% for menu_page in include.menu %}
         <li class="{% if page.url == menu_page.url %}current{% endif %} {% if menu_page.suburls contains page.url %}current-parent{% endif %}">
-            <a href="{{ menu_page.url }}">{{ menu_page.title }}</a>
+            <a href="{{ menu_page.url }}">{{ menu_page.menu.name }}</a>
             {% unless menu_page.subpages contains 0 %}
                 {% include menu.html menu=menu_page.subpages current_url=page.url %}
             {% endunless %}
