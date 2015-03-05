@@ -6,9 +6,7 @@ A Jekyll plugin that helps you generate nested and sorted menus.
 
 ## Installation
 
-The following guide assumes Jekyll allows symlinks in _includes, whcih it does not currently do. This issue is tracked [here](https://github.com/mojombo/jekyll/issues/1552).
-
-For the time being, just copy the file `menu.html` instead of symlinking it.
+The following guide assumes Jekyll allows symlinks in _includes, which only works in unsafe mode. If you do not want to enable unsafe mode, copy files instead of symlinking them.
 
 ### Your site is under version control with git
 
