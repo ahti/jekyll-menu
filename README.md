@@ -6,9 +6,7 @@ A Jekyll plugin that helps you generate nested and sorted menus.
 
 ## Installation
 
-The following guide assumes Jekyll allows symlinks in _includes, whcih it does not currently do. This issue is tracked [here](https://github.com/mojombo/jekyll/issues/1552).
-
-For the time being, just copy the file `menu.html` instead of symlinking it. 
+The following guide assumes Jekyll allows symlinks in _includes, which only works in unsafe mode. If you do not want to enable unsafe mode, copy files instead of symlinking them.
 
 ### Your site is under version control with git
 
@@ -38,7 +36,7 @@ Then at least check out this repo into _vendor and follow the steps outlined abo
 Instead of
 
     git submodule add https://github.com/Ahti/jekyll-menu.git
-    
+
 use
 
     git clone https://github.com/Ahti/jekyll-menu.git
@@ -52,7 +50,7 @@ If you insist, just download `menu.html` and `menu_generator.rb` and put them in
 In any of your layouts, insert this code anywhere. I would recommend putting it inside a nav-tag:
 
     {% include menu.html menu=site.menu %}
-    
+
 To include pages in this menu, there are some frontmatter settings that you can specify for each site:
 
 ```yaml
@@ -71,13 +69,13 @@ Setting    | Meaning
 The output of the include tag is best described by example:
 
 ```html
-<ul>
+<ul class="menu-level-0">
     <li>
         <a href="/">Index</a>
     </li>
     <li class="current-parent">
         <a href="/something/">A page with a subpage</a>
-        <ul>
+        <ul class="menu-level-1">
             <li class="current">
                 <a href="/something/else/">The subpage (also the current page)</a>
             </li>
@@ -86,4 +84,4 @@ The output of the include tag is best described by example:
 </ul>
 ```
 
-As you can see, the output is a list of links and lists. The list item for the current page has the class `current`, parent menu items have the class `current-parent`.
+As you can see, the output is a list of links and lists. The list item for the current page has the class `current`, parent menu items have the class `current-parent`. Also, each list has a class corresponding to the nesting level of the menu it represents.
