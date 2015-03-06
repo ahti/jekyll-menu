@@ -1,5 +1,3 @@
-require 'pp'
-
 module Jekyll
     class Page
         def menu
@@ -19,21 +17,30 @@ module Jekyll
         end
     end
     
-    
-    
     class MenuGenerator < Generator
         safe true
         
         def menu_name(hash)
             hash['menu']['name'] || hash['title']
         end
-        
+
+        def setup_config(site)
+            site.config['menu_generator'] ||= {}
+            site.config['menu_generator']['parent_match_hash'] ||= 'path'
+            site.config['menu_generator']['menu_root'] ||= '__root'
+
+            @parent_match_hash = site.config['menu_generator']['parent_match_hash']
+            @menu_root         = site.config['menu_generator']['menu_root']
+        end
+
         def generate(site)
             @pages = site.pages.dup
-            
+
+            setup_config(site)
+
             @main_menu = []
-            @lookup = { 'main' => @main_menu }
-            
+            @lookup = { @menu_root => @main_menu }
+
             build_tree
             sort_pages
             generate_suburls
@@ -49,7 +56,7 @@ module Jekyll
                 @pages.reject! do |page|
                     parent = @lookup[page.menu_parent]
                     unless parent.nil?
-                        @lookup[page.menu_name] = page.subpages
+                        @lookup[page[@parent_match_hash]] = page.subpages
                         parent << page.to_liquid
                         true
                     else
@@ -114,6 +121,5 @@ module Jekyll
                 subsub
             end
         end
-    end
-    
+    end 
 end
