@@ -53,6 +53,13 @@ In any of your layouts, insert this code anywhere. I would recommend putting it 
 
     {% include menu.html menu=site.menu %}
 
+You can specifiy how many menu level you want to render with the parameter `max_depth`.
+Have in mind like in arrays the first menu level is 0. So
+
+    {% include menu.html menu=site.menu max_depth=1 %}
+
+will render just the first and second level.
+
 To include pages in this menu, there are some frontmatter settings that you can specify for each site:
 
 ```yaml
