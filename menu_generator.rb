@@ -60,6 +60,8 @@ module Jekyll
                 @pages.reject! do |page|
                     parent = @lookup[page.menu_parent]
                     unless parent.nil?
+                        # Initilize the name
+                        page.menu_name
                         @lookup[page[@parent_match_hash]] = page.subpages
                         parent << page.to_liquid
                         true
