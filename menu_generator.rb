@@ -52,8 +52,6 @@ module Jekyll
             build_tree
             sort_pages
             generate_suburls
-            
-            pp @main_menu
 
             site.config[@hash_name_in_site_object] = @main_menu
         end
