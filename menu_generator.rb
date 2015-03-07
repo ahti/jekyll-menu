@@ -29,6 +29,10 @@ module Jekyll
             site.config['menu_generator']['parent_match_hash'] ||= 'path'
             site.config['menu_generator']['menu_root'] ||= '__root'
 
+            site.config['menu_generator']['css'] ||= {}
+            site.config['menu_generator']['css']['current'] ||= 'current'
+            site.config['menu_generator']['css']['current_parent'] ||= 'current-parent'
+
             @parent_match_hash = site.config['menu_generator']['parent_match_hash']
             @menu_root         = site.config['menu_generator']['menu_root']
         end
