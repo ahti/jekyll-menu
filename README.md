@@ -65,21 +65,52 @@ menu:
 Setting    | Meaning
 -----------|--------
 `name`     | The name to be displayed in the menu for this page (also the name referenced in parent). Defaults to the pages title attribute.
-`parent`   | The menu entry under which to nest the menu item for this page. Specify `__root` for top-level entries. Defaults to nothing which leads to the page not getting a menu entry at all.
+`parent`   | The menu entry, specified by the path, under which to nest the menu item for this page. Specify `__root` for top-level entries. Defaults to nothing which leads to the page not getting a menu entry at all.
 `position` | A position used for sorting The menu entries. Pages without this option are sorted by name and come after all pages that have a position set.
 
 The output of the include tag is best described by example:
 
+These three pages
+
+> `index.md`
+
+```yaml
+menu:
+  name: Index
+  parent: __root
+  position: 23
+```
+
+> `something/index.md`
+
+```yaml
+menu:
+  name: "A page with a subpage"
+  parent: "__root"
+  position: 42
+```
+
+> `something/else/index.md`
+
+```yaml
+menu:
+  name: "The subpage (also the current page)"
+  parent: "something/index.md"
+  position: 2342
+```
+
+lead to this menu:
+
 ```html
 <ul class="menu-level-0">
-    <li>
-        <a href="/">Index</a>
+    <li class="">
+        <a href="/index.html">Index</a>
     </li>
     <li class="current-parent">
-        <a href="/something/">A page with a subpage</a>
+        <a href="/something/index.html">A page with a subpage</a>
         <ul class="menu-level-1">
             <li class="current">
-                <a href="/something/else/">The subpage (also the current page)</a>
+                <a href="/something/else/index.html">The subpage (also the current page)</a>
             </li>
         </ul>
     </li>
@@ -91,8 +122,6 @@ As you can see, the output is a list of links and lists. The list item for the c
 ### Site configuration
 
 You can configure some parts by setting values in your site config file.
-
-
 
 ```yaml
 menu_generator:
