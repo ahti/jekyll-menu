@@ -88,7 +88,7 @@ The output of the include tag is best described by example:
 
 As you can see, the output is a list of links and lists. The list item for the current page has the class `current`, parent menu items have the class `current-parent`. Also, each list has a class corresponding to the nesting level of the menu it represents.
 
-### Configuration
+### Site configuration
 
 You can configure some parts by setting values in your site config file.
 
