@@ -105,7 +105,7 @@ menu_generator:
 ```
 
 Setting    |  Default |  Meaning
------------|---------------------
+-----------|----------|-----------
 `parent_match_hash`  |  `path` | Which hash of a page should be used to identify the parent page. The default is the `path`. If your provide all your pages appearing in your menu with an for example `id` hash you can set it here.
 `menu_root` |  `__root`  | The name of the menu root. If you have name collision with root name change it.
 `css.current` | `current` |  CSS class for the current element.
