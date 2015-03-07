@@ -132,18 +132,22 @@ You can configure some parts by setting values in your site config file.
 
 ```yaml
 menu_generator:
-  parent_match_hash: "path"
-  menu_root: "__root"
   css:
     current: "current"
     current_parent: "current-parent"
+  delete_content_hash: "false"
+  hash_name_in_site_object: "menu"
+  menu_root: "__root"
+  parent_match_hash: "path"
 
 ```
 
 Setting    |  Default |  Meaning
 -----------|----------|-----------
-`parent_match_hash`  |  `path` | Which hash of a page should be used to identify the parent page. The default is the `path`. If your provide all your pages appearing in your menu with an for example `id` hash you can set it here.
-`menu_root` |  `__root`  | The name of the menu root. If you have name collision with root name change it.
 `css.current` | `current` |  CSS class for the current element.
 `css.current_parent` | `current-parent` |  CSS class for menu elements for which a child is the current page.
+`delete_content_hash` |  `false`  | If its `true` the content hash of page will deleted inside the menu structure. This switch is mainly for debuging. 
+`hash_name_in_site_object` |  `menu`  | Hash name in site object to store the menu data.
+`menu_root` |  `__root`  | The name of the menu root. If you have name collision with root name change it.
+`parent_match_hash`  |  `path` | Which hash of a page should be used to identify the parent page. The default is the `path`. If your provide all your pages appearing in your menu with an for example `id` hash you can set it here.
 

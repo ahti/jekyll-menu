@@ -13,7 +13,7 @@ module Jekyll
         end
         
         def subpages
-            self.data['subpages'] ||= []
+            menu['subpages'] ||= []
         end
     end
     
@@ -28,13 +28,17 @@ module Jekyll
             site.config['menu_generator'] ||= {}
             site.config['menu_generator']['parent_match_hash'] ||= 'path'
             site.config['menu_generator']['menu_root'] ||= '__root'
+            site.config['menu_generator']['delete_content_hash'] ||= false
+            site.config['menu_generator']['hash_name_in_site_object'] ||= "menu"
 
             site.config['menu_generator']['css'] ||= {}
             site.config['menu_generator']['css']['current'] ||= 'current'
             site.config['menu_generator']['css']['current_parent'] ||= 'current-parent'
 
-            @parent_match_hash = site.config['menu_generator']['parent_match_hash']
-            @menu_root         = site.config['menu_generator']['menu_root']
+            @parent_match_hash      = site.config['menu_generator']['parent_match_hash']
+            @menu_root              = site.config['menu_generator']['menu_root']
+            @delete_content_hash    = site.config['menu_generator']['delete_content_hash']
+            @hash_name_in_site_object    = site.config['menu_generator']['hash_name_in_site_object']
         end
 
         def generate(site)
@@ -49,7 +53,9 @@ module Jekyll
             sort_pages
             generate_suburls
             
-            site.config['menu'] = @main_menu
+            pp @main_menu
+
+            site.config[@hash_name_in_site_object] = @main_menu
         end
         
         def build_tree
@@ -63,7 +69,12 @@ module Jekyll
                         # Initilize the name
                         page.menu_name
                         @lookup[page[@parent_match_hash]] = page.subpages
-                        parent << page.to_liquid
+                        liq_hash = page.to_liquid
+
+                        if @delete_content_hash
+                            liq_hash.delete('content')
+                        end
+                        parent << liq_hash
                         true
                     else
                         false
@@ -110,14 +121,14 @@ module Jekyll
         end
         
         def set_suburls(page)
-            page['subpages'].each do |subpage|
+            page['menu']['subpages'].each do |subpage|
                 set_suburls(subpage)
             end
-            page['suburls'] = suburls(page)
+            page['menu']['suburls'] = suburls(page)
         end
         
         def suburls(page_hash, add_self=false)
-            subsub = page_hash['subpages'].map do |subpage|
+            subsub = page_hash['menu']['subpages'].map do |subpage|
                 suburls(subpage, true)
             end
             subsub.flatten!
