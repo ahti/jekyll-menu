@@ -57,7 +57,7 @@ module Jekyll
             sort_pages
             generate_suburls
 
-            site.config[@hash_name_in_site_object] = @main_menu
+            site.config[@hash_name_in_site_config] = @main_menu
             site.menu = @main_menu
         end
         
