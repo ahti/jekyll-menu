@@ -16,7 +16,7 @@ module Jekyll
             menu['subpages'] ||= []
         end
     end
-    
+
     class MenuGenerator < Generator
         safe true
         
@@ -137,4 +137,126 @@ module Jekyll
             end
         end
     end 
+
+
+  class MenuGeneratorTag < Liquid::Tag
+
+    Syntax = /^\s*name:[a-zA-Z_-]*\s*(max_depth:[0-9]+)?\s*$/ 
+
+    def initialize(tag_name, markup, tokens)
+      @attributes = {}
+      
+      # Parse parameters
+      if markup =~ Syntax
+        markup.scan(Liquid::TagAttributes) do |key, value|
+          #p key + ":" + value
+          @attributes[key] = value
+        end
+      else
+        raise SyntaxError.new("Syntax Error in 'MenuGenerator' - Valid syntax: menu name:x [max_depth:y style:z]")
+      end
+
+      @max_depth = @attributes['max_depth'].nil? ? -1 : @attributes['max_depth'].to_i()
+      
+      super
+    end
+
+    def render(context)
+      site = context.registers[:site]
+      page = context.registers[:page]
+
+
+      
+      pp site.config['menu']
+      # render_menu(site['menu'], page)
+    end
+
+    def render_menu(menu, page, level=0)
+      
+      if menu.nil?
+        return ""
+      end
+
+
+      output = "<ul class=\"menu-level-#{level}\">"
+
+      menu.each do |menu_page|
+        css_class = ""
+        # if page['url'] == menu_page['url']
+        #   css_class = " class=\"" +  site['menu_generator']['css']['current'] + "\""
+        
+        # elsif menu_page['menu']['suburls'].include? page['url']
+        #   css_class = " class=\"" +  site['menu_generator']['css']['current_parent'] + "\""  
+        # end 
+
+        #output += "<li#{css_class}>#{menu_page.menu_name}</li>"
+#        <li class="{% if page.url == menu_page.url %}{{ site.menu_generator.css.current }}{% endif %}{% if menu_page.menu.suburls contains page.url %}{{ site.menu_generator.css.current_parent }}{% endif %}">
+#             <a href="{{ menu_page.url }}">{{ menu_page.menu.name }}</a>{% assign subpage_count = menu_page.menu.subpages | size %}{% unless 0 == subpage_count or level_diff == 0 %}{% include menu.html menu=menu_page.menu.subpages current_url=page.url level=menu_level max_depth=max_depth %}{% endunless %}
+#     </li>{% endfor %}  
+      end      
+
+#       <ul class="menu-level-{{ menu_level }}">{% for menu_page in include.menu %}
+#     <li class="{% if page.url == menu_page.url %}{{ site.menu_generator.css.current }}{% endif %}{% if menu_page.menu.suburls contains page.url %}{{ site.menu_generator.css.current_parent }}{% endif %}">
+#             <a href="{{ menu_page.url }}">{{ menu_page.menu.name }}</a>{% assign subpage_count = menu_page.menu.subpages | size %}{% unless 0 == subpage_count or level_diff == 0 %}{% include menu.html menu=menu_page.menu.subpages current_url=page.url level=menu_level max_depth=max_depth %}{% endunless %}
+#     </li>{% endfor %}
+# </ul>
+      output += "</ul>"
+
+      # render_menu_func(nil)
+
+      output
+      
+    end
+  end
+
+  module MenuGeneratorFilter
+
+    def render_menu(menu, max_depth=-1, style=nil, level=0)
+
+      render_menu_func(menu, max_depth, style)
+    end
+
+    private
+    def render_menu_func(menu, max_depth, style, level=0)
+      site = @context.registers[:site]
+      page = @context.registers[:page]
+
+      if menu.nil?
+        return ""
+      end
+
+
+      output = "<ul class=\"menu-level-#{level}\">"
+
+      menu.each do |menu_page|
+        css_class = ""
+        if page['url'] == menu_page['url']
+          css_class = " class=\"" +  site['menu_generator']['css']['current'] + "\""
+        
+        elsif menu_page.menu.suburls.include? page.url
+          css_class = " class=\"" +  site['menu_generator']['css']['current_parent'] + "\""  
+        end 
+
+        #output += "<li#{css_class}>#{menu_page.menu_name}</li>"
+#        <li class="{% if page.url == menu_page.url %}{{ site.menu_generator.css.current }}{% endif %}{% if menu_page.menu.suburls contains page.url %}{{ site.menu_generator.css.current_parent }}{% endif %}">
+#             <a href="{{ menu_page.url }}">{{ menu_page.menu.name }}</a>{% assign subpage_count = menu_page.menu.subpages | size %}{% unless 0 == subpage_count or level_diff == 0 %}{% include menu.html menu=menu_page.menu.subpages current_url=page.url level=menu_level max_depth=max_depth %}{% endunless %}
+#     </li>{% endfor %}  
+      end      
+
+#       <ul class="menu-level-{{ menu_level }}">{% for menu_page in include.menu %}
+#     <li class="{% if page.url == menu_page.url %}{{ site.menu_generator.css.current }}{% endif %}{% if menu_page.menu.suburls contains page.url %}{{ site.menu_generator.css.current_parent }}{% endif %}">
+#             <a href="{{ menu_page.url }}">{{ menu_page.menu.name }}</a>{% assign subpage_count = menu_page.menu.subpages | size %}{% unless 0 == subpage_count or level_diff == 0 %}{% include menu.html menu=menu_page.menu.subpages current_url=page.url level=menu_level max_depth=max_depth %}{% endunless %}
+#     </li>{% endfor %}
+# </ul>
+      output += "</ul>"
+
+      # render_menu_func(nil)
+
+      output
+      
+    end
+
+  end
 end
+
+Liquid::Template.register_tag('menu', Jekyll::MenuGeneratorTag)
