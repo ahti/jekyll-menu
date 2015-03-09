@@ -18,9 +18,7 @@ tl;dr:
 ```bash
 mkdir _vendor
 cd _vendor
-git submodule add https://github.com/Ahti/jekyll-menu.git
-cd ../_includes
-ln -s ../_vendor/jekyll-menu/menu.html
+git submodule add https://github.com/shdev/jekyll-menu.git
 cd ../_plugins
 ln -s ../_vendor/jekyll-menu/menu_generator.rb
 ```
