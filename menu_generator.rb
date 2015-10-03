@@ -38,6 +38,8 @@ module Jekyll
             site.config['menu_generator']['css'] ||= {}
             site.config['menu_generator']['css']['current'] ||= 'current'
             site.config['menu_generator']['css']['current_parent'] ||= 'current-parent'
+            site.config['menu_generator']['css']['li'] ||= ''
+            site.config['menu_generator']['css']['ul'] ||= ''
 
             @parent_match_hash      = site.config['menu_generator']['parent_match_hash']
             @menu_root              = site.config['menu_generator']['menu_root']
@@ -176,15 +178,15 @@ module Jekyll
     end
 
     def render_menu(menu, site, page, level=0)
-      output = "<ul class=\"menu-level-#{level}\">"
+      output = "<ul class=\"menu-level-#{level} " + site.config['menu_generator']['css']['ul'] +  "\">"
 
       menu.each do |menu_page|
         
         css_class = ""
         if page['url'] == menu_page['url']
-          css_class = " class=\"" +  @css_class_current + "\""
+          css_class = " class=\"" +  site.config['menu_generator']['css']['li'] + ' ' +  @css_class_current + "\""
         elsif menu_page['menu']['suburls'].include? page['url']
-          css_class = " class=\"" +  @css_class_current_parent + "\""  
+          css_class = " class=\"" +  site.config['menu_generator']['css']['li'] + ' ' + @css_class_current_parent + "\""  
         end 
 
         title = menu_page['menu']['name']
