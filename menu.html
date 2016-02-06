@@ -14,7 +14,6 @@
     	<li class="{% if page.url == menu_page.url %}{{ site.menu_generator.css.current }}{% endif %}{% if menu_page.menu.suburls contains page.url %}{{ site.menu_generator.css.current_parent }}{% endif %}">
             <a href="{{ menu_page.url }}">{{ menu_page.menu.name }}</a>
             {% assign subpage_count = menu_page.menu.subpages | size %}
-            ({{ subpage_count }}, {{ level_diff }})
 
             {% unless 0 == subpage_count or level_diff == 0 %}
             	{% include menu.html menu=menu_page.menu.subpages current_url=page.url level=menu_level max_depth=max_depth %}
