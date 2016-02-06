@@ -3,19 +3,29 @@
 {% else %}
 	{% capture menu_level %}{{ include.level | plus:1 }}{% endcapture %}
 {% endif %}
+    
+    menu_level {{ menu_level }}
+
 {% if include.max_depth == null %}
 	{% assign max_depth = -1 %}
 {% else %}
 	{% assign max_depth = include.max_depth %}
 {% endif %}
+
+    max_depth {{ max_depth }}
+
 	{% assign level_diff = menu_level | minus: max_depth %}
 <ul class="menu-level-{{ menu_level }}">
 	{% for menu_page in include.menu %}
     	<li class="{% if page.url == menu_page.url %}{{ site.menu_generator.css.current }}{% endif %}{% if menu_page.menu.suburls contains page.url %}{{ site.menu_generator.css.current_parent }}{% endif %}">
             <a href="{{ menu_page.url }}">{{ menu_page.menu.name }}</a>
             {% assign subpage_count = menu_page.menu.subpages | size %}
+            ({{ subpage_count }}, {{ level_diff }})
+
             {% unless 0 == subpage_count or level_diff == 0 %}
             	{% include menu.html menu=menu_page.menu.subpages current_url=page.url level=menu_level max_depth=max_depth %}
+                {% assign menu_level = menu_level | minus: 1 %}
+                {% assign level_diff = menu_level | minus: max_depth %}
             {% endunless %}
     	</li>
     {% endfor %}
