@@ -3,17 +3,11 @@
 {% else %}
 	{% capture menu_level %}{{ include.level | plus:1 }}{% endcapture %}
 {% endif %}
-    
-    menu_level {{ menu_level }}
-
 {% if include.max_depth == null %}
 	{% assign max_depth = -1 %}
 {% else %}
 	{% assign max_depth = include.max_depth %}
 {% endif %}
-
-    max_depth {{ max_depth }}
-
 	{% assign level_diff = menu_level | minus: max_depth %}
 <ul class="menu-level-{{ menu_level }}">
 	{% for menu_page in include.menu %}
