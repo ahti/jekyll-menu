@@ -1,6 +1,8 @@
-require 'pp'
-
 module Jekyll
+    class Site
+      attr_accessor :menu
+    end
+
     class Page
         def menu
             self.data['menu'] ||= {}
@@ -15,30 +17,50 @@ module Jekyll
         end
         
         def subpages
-            self.data['subpages'] ||= []
+            menu['subpages'] ||= []
         end
     end
-    
-    
-    
+
     class MenuGenerator < Generator
         safe true
         
         def menu_name(hash)
             hash['menu']['name'] || hash['title']
         end
-        
+
+        def setup_config(site)
+            site.config['menu_generator'] ||= {}
+            site.config['menu_generator']['parent_match_hash'] ||= 'path'
+            site.config['menu_generator']['menu_root'] ||= '__root'
+            site.config['menu_generator']['delete_content_hash'] ||= false
+            site.config['menu_generator']['hash_name_in_site_config'] ||= "menu"
+
+            site.config['menu_generator']['css'] ||= {}
+            site.config['menu_generator']['css']['current'] ||= 'current'
+            site.config['menu_generator']['css']['current_parent'] ||= 'current-parent'
+            site.config['menu_generator']['css']['li'] ||= ''
+            site.config['menu_generator']['css']['ul'] ||= ''
+
+            @parent_match_hash      = site.config['menu_generator']['parent_match_hash']
+            @menu_root              = site.config['menu_generator']['menu_root']
+            @delete_content_hash    = site.config['menu_generator']['delete_content_hash']
+            @hash_name_in_site_config    = site.config['menu_generator']['hash_name_in_site_config']
+        end
+
         def generate(site)
             @pages = site.pages.dup
-            
+
+            setup_config(site)
+
             @main_menu = []
-            @lookup = { 'main' => @main_menu }
-            
+            @lookup = { @menu_root => @main_menu }
+
             build_tree
             sort_pages
             generate_suburls
-            
-            site.config['menu'] = @main_menu
+
+            site.config[@hash_name_in_site_config] = @main_menu
+            site.menu = @main_menu
         end
         
         def build_tree
@@ -49,8 +71,15 @@ module Jekyll
                 @pages.reject! do |page|
                     parent = @lookup[page.menu_parent]
                     unless parent.nil?
-                        @lookup[page.menu_name] = page.subpages
-                        parent << page.to_liquid
+                        # Initilize the name
+                        page.menu_name
+                        @lookup[page[@parent_match_hash]] = page.subpages
+                        liq_hash = page.to_liquid
+
+                        if @delete_content_hash
+                            liq_hash.delete('content')
+                        end
+                        parent << liq_hash
                         true
                     else
                         false
@@ -97,14 +126,14 @@ module Jekyll
         end
         
         def set_suburls(page)
-            page['subpages'].each do |subpage|
+            page['menu']['subpages'].each do |subpage|
                 set_suburls(subpage)
             end
-            page['suburls'] = suburls(page)
+            page['menu']['suburls'] = suburls(page)
         end
         
         def suburls(page_hash, add_self=false)
-            subsub = page_hash['subpages'].map do |subpage|
+            subsub = page_hash['menu']['subpages'].map do |subpage|
                 suburls(subpage, true)
             end
             subsub.flatten!
@@ -114,6 +143,72 @@ module Jekyll
                 subsub
             end
         end
+    end 
+
+  class MenuGeneratorTag < Liquid::Tag
+
+    Syntax = /^\s*(max_depth:[0-9]+)?\s*$/ 
+
+    def initialize(tag_name, markup, tokens)
+      @attributes = {}
+      
+      # Parse parameters
+      if markup =~ Syntax
+        markup.scan(Liquid::TagAttributes) do |key, value|
+          #p key + ":" + value
+          @attributes[key] = value
+        end
+      else
+        raise SyntaxError.new("Syntax Error in 'MenuGenerator' - Valid syntax: menu [max_depth:y]")
+      end
+
+      @max_depth = @attributes['max_depth'].nil? ? -1 : @attributes['max_depth'].to_i()
+      
+      super
     end
-    
+
+    def render(context)
+      site = context.registers[:site]
+      page = context.registers[:page]
+
+      @css_class_current = site.config['menu_generator']['css']['current']
+      @css_class_current_parent = site.config['menu_generator']['css']['current_parent']
+
+      render_menu(site.menu, site, page)
+    end
+
+    def render_menu(menu, site, page, level=0)
+      output = "<ul class=\"menu-level-#{level} " + site.config['menu_generator']['css']['ul'] +  "\">"
+
+      menu.each do |menu_page|
+        
+        css_class = ""
+        if page['url'] == menu_page['url']
+          css_class = " class=\"" +  site.config['menu_generator']['css']['li'] + ' ' +  @css_class_current + "\""
+        elsif menu_page['menu']['suburls'].include? page['url']
+          css_class = " class=\"" +  site.config['menu_generator']['css']['li'] + ' ' + @css_class_current_parent + "\""  
+        end 
+
+        title = menu_page['menu']['name']
+        url = menu_page['url']
+
+        output += "<li#{css_class}><a href=\"#{url}\">#{title}</a>"
+
+        unless menu_page['menu']['subpages'].count == 0 or level - @max_depth == 0
+          output += render_menu(menu_page['menu']['subpages'], site, page, level + 1)
+        end
+
+        output += "</li>"
+
+      end      
+
+      output += "</ul>"
+
+      output
+    end
+
+  end
+
 end
+
+Liquid::Template.register_tag('menu', Jekyll::MenuGeneratorTag)
